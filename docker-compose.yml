@@ -1,0 +1,35 @@
+version: '3.7'
+services:
+    db:
+        image: mysql
+        ports:
+            - "3308:3306"
+        environment:
+          MYSQL_ROOT_PASSWORD: topSecret
+          MYSQL_DATABASE: baseapp
+          MYSQL_USER: mainuser
+          MYSQL_PASSWORD: topSecret
+        volumes:
+            - finance_db_volume:/var/lib/mysql
+
+    flask-api:
+        build:
+          context: ./api/
+          dockerfile: Dockerfile
+        ports:
+            - "5000:5000"
+        volumes:
+            - ./api:/app
+        environment:
+            - PORT=5000
+            - IS_LOCAL=true
+            - USER=mainuser
+            - PASSWORD=topSecret
+            - DATABASE=baseapp
+        links:
+          - db
+        depends_on:
+            - db
+
+volumes:
+  base_db_volume:

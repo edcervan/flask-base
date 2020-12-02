@@ -1,0 +1,13 @@
+Check container logs:
+docker logs base_flask-api_1
+docker logs base_db_1
+
+Bring containers up:
+docker-compose -f "docker-compose.yml" up -d --build
+
+Bring containers down:
+docker-compose -f "docker-compose.yml" down
+
+Check DB on terminal: 
+docker exec -it base_db_1 bash
+mysql -u username -p
