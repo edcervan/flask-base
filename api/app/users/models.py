@@ -123,6 +123,7 @@ class Trip(db.Model):
 
 
 class Stop(db.Model):
+    __tablename__ = "Stop"
     id = db.Column(db.Integer, primary_key=True)
     trip_id = db.Column(db.Integer, db.ForeignKey("Trip.id"), nullable=False)
     origin_address = db.Column(db.String(500), index=True)

@@ -55,8 +55,8 @@ class Trips:
         for trip in trips:
             trip_dict = trip.__dict__
             del trip_dict["_sa_instance_state"]
-            trip_dict["origin_date"] = trip_dict["origin_date"].strftime("%Y-%m-%d %H:%M:%S")
-            trip_dict["destination_date"] = trip_dict["destination_date"].strftime("%Y-%m-%d %H:%M:%S")
+            # trip_dict["origin_date"] = trip_dict["origin_date"].strftime("%Y-%m-%d %H:%M:%S")
+            # trip_dict["destination_date"] = trip_dict["destination_date"].strftime("%Y-%m-%d %H:%M:%S")
             trip_dict["created"] = trip_dict["created"].strftime("%Y-%m-%d")
             trip_dict["updated"] = (
                 trip_dict["updated"].strftime("%Y-%m-%d")
