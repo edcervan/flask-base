@@ -10,14 +10,14 @@ services:
           MYSQL_USER: mainuser
           MYSQL_PASSWORD: topSecret
         volumes:
-            - finance_db_volume:/var/lib/mysql
+            - base_db_volume:/var/lib/mysql
 
     flask-api:
         build:
           context: ./api/
           dockerfile: Dockerfile
         ports:
-            - "5000:5000"
+            - "5001:5000"
         volumes:
             - ./api:/app
         environment:

@@ -1,25 +1,34 @@
 # Import flask dependencies
-from flask import Blueprint, request, make_response, Response
-from flask_jwt_extended import (
-    jwt_required,
-    get_jwt_identity,
-    jwt_refresh_token_required,
-)
-from .users import Users
 from app import jwt
+from flask import Blueprint, make_response, request, Response
+from flask_jwt_extended import (
+    get_jwt_identity,
+    jwt_required,
+    # jwt_refresh_token_required,
+)
+
 from .blacklist_helpers import is_token_revoked
+from .users import Users
 
 # Define the blueprint: 'auth', set its url prefix: app.url/auth
 mod = Blueprint("users", __name__, url_prefix="/users")
 
+
 # Define our callback function to check if a token has been revoked or not
-@jwt.token_in_blacklist_loader
+# @jwt.token_in_blacklist_loader
 def check_if_token_revoked(decoded_token):
     return is_token_revoked(decoded_token)
 
 
+@mod.route("/", methods=["GET"])
+def test_users():
+    if request.method == "GET":
+        resp = make_response("Users", 200)
+        return resp
+
+
 @mod.route("/get_all_users", methods=["GET"])
-@jwt_required
+# @jwt_required
 def get_all_users():
     if request.method == "GET":
         (status_code, response) = Users().get_users(None)
@@ -29,7 +38,7 @@ def get_all_users():
 
 # A revoked refresh tokens will not be able to access this endpoint
 @mod.route("/refresh", methods=["POST"])
-@jwt_refresh_token_required
+# @jwt_refresh_token_required
 def refresh():
     # Do the same thing that we did in the login endpoint here
     current_user = get_jwt_identity()
@@ -59,7 +68,7 @@ def update():
 
 
 @mod.route("/retrieve", methods=["GET"])
-@jwt_required
+# @jwt_required
 def retrieve():
     if request.method == "GET":
         user_id = get_jwt_identity()
@@ -69,7 +78,7 @@ def retrieve():
 
 
 @mod.route("/delete", methods=["DELETE"])
-@jwt_required
+# @jwt_required
 def delete():
     if request.method == "DELETE":
         user_id = get_jwt_identity()
@@ -87,7 +96,7 @@ def login():
 
 
 @mod.route("/logout", methods=["GET"])
-@jwt_required
+# @jwt_required
 def logout():
     if request.method == "GET":
         user_id = get_jwt_identity()

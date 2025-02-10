@@ -1,7 +1,7 @@
 import json
 import datetime
 from app import db, app
-from .models import User
+from .models import User, Role
 from sqlalchemy.orm.exc import NoResultFound
 from flask_jwt_extended import (
     create_access_token,
@@ -28,37 +28,36 @@ class Users:
 
         if not all(
             k in data
-            for k in ("first_name", "last_name", "username", "email", "password")
+            for k in ("first_name", "last_name", "username", "email", "password", "dob", "sex", "location")
         ):
             400, json.dumps({"error": "Missing Parameters"})
-        if User.query.filter_by(username=data["username"]).first() is not None:
+        if User.query.filter_by(username=data["email"]).first() is not None:
             400, json.dumps({"error": "Existing User"})
-
-        data["available_money"] = 100000
         user = User(**data)
         user.hash_password()
         db.session.add(user)
         db.session.commit()
         # user.save()
-        username = user.username
-        return 200, json.dumps({"msg": f"{username} has been created"})
+        email = user.email
+        return 200, json.dumps({"msg": f"{email} has been created"})
 
     def update(self, data):
-        return 200, json.dumps({"msg": "User Created"})
+        return 200, json.dumps({"msg": "User Updated"})
 
     def get_user(self, data):
         return 200, json.dumps({"msg": "User Created"})
 
     def delete_user(self, data):
-        return 200, json.dumps({"msg": "User Created"})
+        return 200, json.dumps({"msg": "User Deleted"})
 
     def get_users(self, data):
-        users = User.query.all()
+        users = db.session.query(User, Role).join(Role, Role.id == User.role_id).all()
         all_users = []
-        for user in users:
+        for user, role in users:
             user_dict = user.__dict__
             del user_dict["_sa_instance_state"]
             del user_dict["password"]
+            user_dict["dob"] = user_dict["dob"].strftime("%Y-%m-%d")
             user_dict["created"] = user_dict["created"].strftime("%Y-%m-%d")
             user_dict["updated"] = (
                 user_dict["updated"].strftime("%Y-%m-%d")
@@ -66,7 +65,7 @@ class Users:
                 else None
             )
             all_users.append(user_dict)
-        print(json.dumps(all_users))
+            user_dict["role_name"] = role.title
         return 200, json.dumps({"msg": {"Users": all_users}})
 
     def refresh(self, user_id):
